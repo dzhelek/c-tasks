@@ -24,20 +24,30 @@ void stringify(char s[]) {
 }
 
 void entab(char s[]) {
-    unsigned int i = 0, j = 0, spaces = 0, counter = 0;
+    unsigned int new_index = 0, old_index = 0, spaces = 0, counter = 0, width, window;
     char c;
 
-    while ((s[j++] = s[i++])) {
-        if (++counter > TAB_WIDTH) counter = 1;
-        while (s[i++] == ' ') spaces++;
-        if (spaces == 0) i--;
-        else if (spaces >= TAB_WIDTH - counter + 1) {
-            s[j++] = '\t';
-            for (int k = 0; k < spaces - (TAB_WIDTH - counter + 1); k++) s[j++] = ' ';
+    do {
+        width = ++counter % TAB_WIDTH;
+        while (s[old_index++] == ' ') spaces++;
+//        printf("#");
+        old_index--;
+        if (spaces < (window = TAB_WIDTH - width + 1)) old_index -= spaces;
+        else {
+            while (spaces >= window) {
+//                printf("-");
+                s[new_index++] = '\t';
+                spaces -= window;
+                counter += window;
+                width = counter % TAB_WIDTH;
+                window = TAB_WIDTH - width + 1;
+            }
+            for (int k = 0; k < spaces; k++) s[new_index++] = ' ';
+//            printf("O");
         }
-        else i -= spaces;
         spaces = 0;
-    }
+    } while ((s[new_index++] = s[old_index++]) != 0);
+//    printf("\n");
 }
 
 int main(void) {
